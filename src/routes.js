@@ -6,10 +6,9 @@ const AppRoutes = () => (
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<Main />} />
-            <Route path="/repositorio/:repositorio" element={<Repositorio />} />
+            <Route path="/repositorio/:repositorioParams" element={<Repositorio />} />
         </Routes>
     </BrowserRouter>
 );
 export default AppRoutes;
-
 

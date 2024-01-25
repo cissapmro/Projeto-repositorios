@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Container, DeleteButton, Form, List, SubmitButton } from './styles';
 import { FaBars, FaGithub, FaPlus, FaSpinner, FaTrash } from 'react-icons/fa';
 import api from '../../services/api';
+import { Link } from 'react-router-dom';
 
 const Main = () => {
 
@@ -114,9 +115,11 @@ const handleDelete = useCallback((item) => {
                                 <FaTrash size={14} />
                             </DeleteButton>
                             {item.nome}</span>
-                        <a href="https://www.google.com"> 
-                            <FaBars size={14} />
-                    </a>
+                            {/*O uso de encodeURIComponent garante que o nome do item seja codificado corretamente para ser utilizado em uma URL 
+                            como parametro e não como nivel de pasta. ex. de: repositorio/angular/angular - para: repositorio/angular%2Fangular.                           .*/} 
+                        <Link to={`/repositorio/${encodeURIComponent(item.nome)}`}> 
+                            <FaBars size={20} />
+                        </Link>
                     </li>
                 ))}
             </List>  
