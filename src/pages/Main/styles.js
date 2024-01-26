@@ -82,7 +82,7 @@ li {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0; {/*superior e inferior*/}
+    padding: 15px 0; 
 
     & + li {
         border-top: 1px solid red;
@@ -90,7 +90,7 @@ li {
 
     a {
         color: orange;
-        text-decoration: none; {/*remove o sublinhado*/}
+        text-decoration: none; 
     }
 
 }

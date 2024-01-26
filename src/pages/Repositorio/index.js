@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { BackButton, Container, Header, IssueList } from './script';
+import { BackButton, ButtonActions, Container, Header, IssueList, PageActions } from './styles';
 import api from '../../services/api';
 import { FaArrowLeft } from 'react-icons/fa';
 
@@ -10,6 +10,10 @@ const Repositorio = () => {
     const [issues, setIssues] = useState([]); //É UM ARRAY PORQUE TEM MAIS DE UM ISSUES
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(1);
+
+
+
     const { repositorioParams } = useParams();
 
     //Essa função é assíncrona e é responsável por buscar os dados do repositório na API com base nos parâmetros da URL. 
@@ -18,8 +22,14 @@ const Repositorio = () => {
        // O useCallback é um hook do React que é utilizado para memorizar funções, ou seja, para evitar que uma função seja recriada a 
       //  cada renderização do componente, a menos que suas dependências tenham mudado. 
       //  Isso pode ser útil em alguns casos específicos para otimizar o desempenho e evitar renderizações desnecessárias.
-        const loadData = useCallback(async () => {
+       // const loadData = useCallback(async () => {
 
+       //Utiliza o useEffect para chamar a função loadData quando os parâmetros da URL mudam ou quando o componente é montado. 
+    //O useEffect é uma maneira de lidar com efeitos colaterais em componentes funcionais do React.
+       
+     //FUNÇÃO PARA LER OS DADOS
+       useEffect(() => {
+       const load = (async () => {
         try {
         setLoading(true);
         //PEGA O PARÂMTRO QUE ESTÁ NA URL. ex.: angular/angular
@@ -54,20 +64,42 @@ const Repositorio = () => {
         } finally {
             setLoading(false);
         }
-    }, [repositorioParams]);
+    }); //FECHA A FUNÇÃO LOAD
+        load();
+        }, [repositorioParams]);
 
-    //Utiliza o useEffect para chamar a função loadData quando os parâmetros da URL mudam ou quando o componente é montado. 
-    //O useEffect é uma maneira de lidar com efeitos colaterais em componentes funcionais do React.
-    useEffect(() => {
-        loadData();
-      }, [repositorioParams, loadData]);
-     if (loading) {
-        return <p>Carregando...</p>;
-      }
-    
-      if (error) {
-        return <p>{error}</p>;
-      }    
+        /////////////
+
+        //FUNÇÃO PARA PAGINAÇÃO
+        useEffect(() => {
+            const loadIssue = (async () => {
+            const nomeRepo = decodeURIComponent(repositorioParams);
+            const response = await api.get(`/repos/${nomeRepo}/issues`, {
+                params: {
+                    state: 'open',
+                    per_page: 5, 
+                    page
+                }
+            });
+            setIssues(response.data);
+        })
+        loadIssue();
+        }, [repositorioParams, page]);
+        ///////////////////////////////////
+
+        //BOTAO PARA VOLTAR E PRÓXIMO
+        const handleAction = (action) => {
+            setPage(action === 'voltar' ? page - 1 : page + 1);
+       }
+       ///////////////////////////////
+        if (loading) {
+            return <p>Carregando...</p>;
+        }
+        if (error) {
+            return <p>{error}</p>;
+        }   
+   ////////////////////////////////
+
     return(
         <Container>
             <BackButton to="/" >
@@ -95,6 +127,10 @@ const Repositorio = () => {
                 </li>
             ))}
            </IssueList>
+           <PageActions>
+                     <button onClick={() => handleAction('voltar')}>Voltar</button>    
+                     <button onClick={() => handleAction('proxima')}>Próxima</button>   
+           </PageActions>
 
         </Container>
     )
